@@ -5,21 +5,23 @@ import EmployeeList from "@/components/EmployeeList";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash } from "lucide-react";
 import AddEmployeeModal from "@/components/AddEmployeeModal";
+import { Toaster } from "@/components/ui/sonner";
 
 const Home = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
 
+  const fetchEmployees = async () => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/employees`);
+    devLog(response);
+    const data = await response.json();
+    devLog(data);
+    setEmployees(data);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchEmployees = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/employees`);
-      devLog(response);
-      const data = await response.json();
-      devLog(data);
-      setEmployees(data);
-      setIsLoading(false);
-    };
     fetchEmployees();
   }, []);
 
@@ -27,6 +29,10 @@ const Home = () => {
 
   const handleAddEmployee = () => {
     setIsAddEmployeeModalOpen(true);
+  };
+
+  const onEmployeeAdded = () => {
+    fetchEmployees();
   };
 
   return (
@@ -47,8 +53,10 @@ const Home = () => {
         <AddEmployeeModal
           open={isAddEmployeeModalOpen}
           onOpenChange={setIsAddEmployeeModalOpen}
+          onEmployeeAdded={onEmployeeAdded}
         />
       )}
+      <Toaster />
     </div>
   );
 };

@@ -3,9 +3,9 @@ import { Link, Outlet } from "react-router-dom"
 
 const Header = () => {
     return (
-        <header className="sticky top-0 z-10 flex justify-between items-center h-12 px-6 py-3 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-background">
+        <header className="sticky top-0 z-10 flex justify-between items-center h-12 px-6 py-3 text-foreground backdrop-blur supports-[backdrop-filter]:bg-background/60 bg-background border-b border-border">
             <div className="logo">
-                <Link to="/">Vite App</Link>
+                <Link to="/">Spring Boot EMS</Link>
             </div>
             <div className="nav">
                 <ThemeToggleButton />

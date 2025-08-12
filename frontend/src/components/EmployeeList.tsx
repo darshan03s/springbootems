@@ -10,7 +10,7 @@ import {
 
 const EmployeeList = ({ employees }: { employees: Employee[] }) => {
   return (
-    <div className="w-full overflow-hidden rounded-xl border bg-background/50 shadow-sm my-4">
+    <div className="w-full overflow-hidden rounded-xl border bg-background/50 shadow-sm my-2">
       <Table className="min-w-[720px]">
         <TableHeader>
           <TableRow>
@@ -36,7 +36,7 @@ const EmployeeList = ({ employees }: { employees: Employee[] }) => {
               <TableCell className="max-w-[280px] truncate text-center">
                 {employee.email}
               </TableCell>
-              <TableCell className="tabular-nums text-center">
+              <TableCell className="tabular-nums">
                 {employee.phoneNumber}
               </TableCell>
             </TableRow>

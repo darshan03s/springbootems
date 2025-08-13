@@ -7,13 +7,23 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
+import { Checkbox } from "./ui/checkbox";
 
-const EmployeeList = ({ employees }: { employees: Employee[] }) => {
+const EmployeeList = ({
+  employees,
+  selectedEmployees,
+  handleSelectEmployee,
+}: {
+  employees: Employee[];
+  selectedEmployees: string[];
+  handleSelectEmployee: (employeeId: string, checked: boolean) => void;
+}) => {
   return (
     <div className="w-full overflow-hidden rounded-xl border bg-background/50 shadow-sm my-2">
       <Table className="min-w-[720px]">
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[160px] text-center">Select</TableHead>
             <TableHead className="w-[160px] text-center">Department</TableHead>
             <TableHead className="w-[140px] text-center">Employee ID</TableHead>
             <TableHead className="w-[160px] text-center">First Name</TableHead>
@@ -25,13 +35,23 @@ const EmployeeList = ({ employees }: { employees: Employee[] }) => {
         <TableBody>
           {employees.map((employee) => (
             <TableRow key={employee.id}>
+              <TableCell className="text-center">
+                <Checkbox
+                  checked={selectedEmployees.includes(employee.id)}
+                  onCheckedChange={(checked) =>
+                    handleSelectEmployee(employee.id, checked as boolean)
+                  }
+                />
+              </TableCell>
               <TableCell className="max-w-[200px] truncate text-center">
                 {employee.department}
               </TableCell>
               <TableCell className="font-medium text-center">
                 {employee.employeeId}
               </TableCell>
-              <TableCell className="text-center">{employee.firstName}</TableCell>
+              <TableCell className="text-center">
+                {employee.firstName}
+              </TableCell>
               <TableCell className="text-center">{employee.lastName}</TableCell>
               <TableCell className="max-w-[280px] truncate text-center">
                 {employee.email}

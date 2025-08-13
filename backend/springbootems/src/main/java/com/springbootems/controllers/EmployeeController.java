@@ -3,6 +3,7 @@ package com.springbootems.controllers;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,8 +20,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public ResponseEntity<List<Employee>> getAllEmployees() {
+        try {
+            return ResponseEntity.ok(employeeService.getAllEmployees());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employees not found");
+        }
     }
 
     @GetMapping("/employees/{id}")
@@ -28,23 +34,51 @@ public class EmployeeController {
         try {
             return employeeService.getEmployeeById(id);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");
         }
     }
 
     @PostMapping("/create-employee")
     public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
+        try {
+            return employeeService.createEmployee(employee);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Employee not created");
+        }
     }
 
     @PutMapping("/update-employee/{id}")
     public Employee updateEmployee(@PathVariable String id, @RequestBody Employee employee) {
-        return employeeService.updateEmployee(id, employee);
+        try {
+            return employeeService.updateEmployee(id, employee);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");
+        }
     }
 
     @DeleteMapping("/delete-employee/{id}")
-    public void deleteEmployee(@PathVariable String id) {
-        employeeService.deleteEmployee(id);
+    public ResponseEntity<String> deleteEmployee(@PathVariable String id) {
+        try {
+            employeeService.deleteEmployee(id);
+            return ResponseEntity.ok("Employee deleted successfully");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");
+        }
+    }
+
+    @DeleteMapping("/delete-employees")
+    public ResponseEntity<String> deleteEmployees(@RequestBody List<String> employeeIds) {
+        try {
+            employeeService.deleteEmployees(employeeIds);
+            return ResponseEntity.ok("Employees deleted successfully");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");
+        }
     }
 
 }

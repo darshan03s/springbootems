@@ -42,4 +42,8 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
+    public void deleteEmployees(List<String> employeeIds) {
+        employeeRepository.deleteAllById(employeeIds);
+    }
+
 }

@@ -4,7 +4,7 @@ import { devLog } from "@/utils/devUtils";
 import EmployeeList from "@/components/EmployeeList";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash } from "lucide-react";
-import AddEmployeeModal from "@/components/AddEmployeeModal";
+import EmployeeFormModal from "@/components/EmployeeFormModal";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
@@ -13,6 +13,8 @@ const Home = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [isEditEmployeeModalOpen, setIsEditEmployeeModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>(undefined);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -32,16 +34,13 @@ const Home = () => {
   }
 
   async function deleteEmployees(employeeIds: string[]) {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/delete-employees`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(employeeIds),
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/delete-employees`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(employeeIds),
+    });
     devLog(response);
     if (!response.ok) {
       toast.error("Failed to delete employee(s)");
@@ -74,6 +73,11 @@ const Home = () => {
     setIsDeleteModalOpen(false);
   }
 
+  function handleEditEmployee(employee: Employee) {
+    setSelectedEmployee(employee);
+    setIsEditEmployeeModalOpen(true);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-full max-w-4xl mx-auto py-4">
       <h1 className="text-2xl font-bold pb-4">Employee Management System</h1>
@@ -98,13 +102,23 @@ const Home = () => {
           employees={employees}
           selectedEmployees={selectedEmployees}
           handleSelectEmployee={handleSelectEmployee}
+          handleEditEmployee={handleEditEmployee}
         />
       )}
       {isAddEmployeeModalOpen && (
-        <AddEmployeeModal
+        <EmployeeFormModal
           open={isAddEmployeeModalOpen}
           onOpenChange={setIsAddEmployeeModalOpen}
           onEmployeeAdded={updateEmployeesList}
+          employee={undefined}
+        />
+      )}
+      {isEditEmployeeModalOpen && selectedEmployee && (
+        <EmployeeFormModal
+          open={isEditEmployeeModalOpen}
+          onOpenChange={setIsEditEmployeeModalOpen}
+          onEmployeeAdded={updateEmployeesList}
+          employee={selectedEmployee}
         />
       )}
       {isDeleteModalOpen && selectedEmployees.length > 0 && (

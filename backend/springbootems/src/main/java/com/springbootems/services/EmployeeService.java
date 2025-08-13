@@ -29,8 +29,8 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployee(String id, Employee employee) {
-        Employee existingEmployee = employeeRepository.findById(id)
+    public Employee updateEmployee(Employee employee) {
+        Employee existingEmployee = employeeRepository.findByEmployeeId(employee.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         existingEmployee.setFirstName(employee.getFirstName());
         existingEmployee.setLastName(employee.getLastName());

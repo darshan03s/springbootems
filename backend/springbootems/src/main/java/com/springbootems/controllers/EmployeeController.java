@@ -49,10 +49,10 @@ public class EmployeeController {
         }
     }
 
-    @PutMapping("/update-employee/{id}")
-    public Employee updateEmployee(@PathVariable String id, @RequestBody Employee employee) {
+    @PutMapping("/update-employee")
+    public Employee updateEmployee(@RequestBody Employee employee) {
         try {
-            return employeeService.updateEmployee(id, employee);
+            return employeeService.updateEmployee(employee);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found");

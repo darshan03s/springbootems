@@ -8,15 +8,19 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Checkbox } from "./ui/checkbox";
+import { Button } from "./ui/button";
+import { Pencil } from "lucide-react";
 
 const EmployeeList = ({
   employees,
   selectedEmployees,
   handleSelectEmployee,
+  handleEditEmployee,
 }: {
   employees: Employee[];
   selectedEmployees: string[];
   handleSelectEmployee: (employeeId: string, checked: boolean) => void;
+  handleEditEmployee: (employee: Employee) => void;
 }) => {
   return (
     <div className="w-full overflow-hidden rounded-xl border bg-background/50 shadow-sm my-2">
@@ -24,6 +28,7 @@ const EmployeeList = ({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[160px] text-center">Select</TableHead>
+            <TableHead className="w-[160px] text-center">Edit</TableHead>
             <TableHead className="w-[160px] text-center">Department</TableHead>
             <TableHead className="w-[140px] text-center">Employee ID</TableHead>
             <TableHead className="w-[160px] text-center">First Name</TableHead>
@@ -42,6 +47,15 @@ const EmployeeList = ({
                     handleSelectEmployee(employee.id, checked as boolean)
                   }
                 />
+              </TableCell>
+              <TableCell className="text-center">
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  onClick={() => handleEditEmployee(employee)}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
               </TableCell>
               <TableCell className="max-w-[200px] truncate text-center">
                 {employee.department}

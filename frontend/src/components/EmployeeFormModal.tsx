@@ -14,6 +14,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { devLog } from "@/utils/devUtils";
 import { toast } from "sonner";
+import type { Employee } from "@/types";
+import { useEffect } from "react";
 
 const employeeSchema = z.object({
   employeeId: z.string().min(1, "Employee ID is required"),
@@ -26,14 +28,16 @@ const employeeSchema = z.object({
 
 type EmployeeFormData = z.infer<typeof employeeSchema>;
 
-const AddEmployeeModal = ({
+const EmployeeFormModal = ({
   open,
   onOpenChange,
   onEmployeeAdded,
+  employee,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEmployeeAdded: () => void;
+  employee?: Employee;
 }) => {
   const {
     register,
@@ -52,22 +56,44 @@ const AddEmployeeModal = ({
     },
   });
 
+  useEffect(() => {
+    if (employee) {
+      reset({
+        employeeId: employee.employeeId,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        phoneNumber: employee.phoneNumber.toString(),
+        department: employee.department,
+      });
+    } else {
+      reset({
+        employeeId: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        department: "",
+      });
+    }
+  }, [employee, open, reset]);
+
   const onSubmit = async (data: EmployeeFormData) => {
     devLog("Form data:", data);
+    const apiUrl = employee
+      ? `${import.meta.env.VITE_API_URL}/update-employee`
+      : `${import.meta.env.VITE_API_URL}/create-employee`;
 
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/create-employee`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch(apiUrl, {
+      method: employee ? "PUT" : "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
     if (!response.ok) {
-      toast.error("Failed to add employee");
+      toast.error(employee ? "Failed to update employee" : "Failed to add employee");
       return;
     }
 
@@ -82,24 +108,19 @@ const AddEmployeeModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full">
         <DialogHeader>
-          <DialogTitle>Add Employee</DialogTitle>
+          <DialogTitle>{employee ? "Edit Employee" : "Add Employee"}</DialogTitle>
           <DialogDescription>
-            Add a new employee to the system.
+            {employee ? "Edit an employee" : "Add a new employee"}
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          className="flex flex-col gap-4 w-full"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2 max-h-[70vh] overflow-y-auto hide-scrollbar p-2">
             {/* Employee ID */}
             <div className="flex flex-col gap-0.5">
               <Label className="text-xs">Employee ID</Label>
               {errors.employeeId && (
-                <p className="text-xs text-red-500">
-                  {errors.employeeId.message}
-                </p>
+                <p className="text-xs text-red-500">{errors.employeeId.message}</p>
               )}
               <Input
                 type="text"
@@ -113,9 +134,7 @@ const AddEmployeeModal = ({
             <div className="flex flex-col gap-0.5">
               <Label className="text-xs">First Name</Label>
               {errors.firstName && (
-                <p className="text-xs text-red-500">
-                  {errors.firstName.message}
-                </p>
+                <p className="text-xs text-red-500">{errors.firstName.message}</p>
               )}
               <Input
                 type="text"
@@ -128,11 +147,7 @@ const AddEmployeeModal = ({
             {/* Last Name */}
             <div className="flex flex-col gap-0.5">
               <Label className="text-xs">Last Name</Label>
-              {errors.lastName && (
-                <p className="text-xs text-red-500">
-                  {errors.lastName.message}
-                </p>
-              )}
+              {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
               <Input
                 type="text"
                 className="text-xs h-8 placeholder:text-xs"
@@ -144,9 +159,7 @@ const AddEmployeeModal = ({
             {/* Email */}
             <div className="flex flex-col gap-0.5">
               <Label className="text-xs">Email</Label>
-              {errors.email && (
-                <p className="text-xs text-red-500">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
               <Input
                 type="email"
                 className="text-xs h-8 placeholder:text-xs"
@@ -159,9 +172,7 @@ const AddEmployeeModal = ({
             <div className="flex flex-col gap-0.5">
               <Label className="text-xs">Phone</Label>
               {errors.phoneNumber && (
-                <p className="text-xs text-red-500">
-                  {errors.phoneNumber.message}
-                </p>
+                <p className="text-xs text-red-500">{errors.phoneNumber.message}</p>
               )}
               <Input
                 type="tel"
@@ -175,9 +186,7 @@ const AddEmployeeModal = ({
             <div className="flex flex-col gap-0.5">
               <Label className="text-xs">Department</Label>
               {errors.department && (
-                <p className="text-xs text-red-500">
-                  {errors.department.message}
-                </p>
+                <p className="text-xs text-red-500">{errors.department.message}</p>
               )}
               <Input
                 type="text"
@@ -192,12 +201,7 @@ const AddEmployeeModal = ({
             <Button size="xs" variant="outline" onClick={() => reset()}>
               Reset
             </Button>
-            <Button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              size="xs"
-              variant="outline"
-            >
+            <Button type="button" onClick={() => onOpenChange(false)} size="xs" variant="outline">
               Cancel
             </Button>
             <Button size="xs" type="submit" disabled={isSubmitting}>
@@ -210,4 +214,4 @@ const AddEmployeeModal = ({
   );
 };
 
-export default AddEmployeeModal;
+export default EmployeeFormModal;
